@@ -1,0 +1,2 @@
+trying to link with google slide/microsoft excel
+improving success rate as it sometimes recognizes false image
