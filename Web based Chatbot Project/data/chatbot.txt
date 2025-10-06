@@ -1,0 +1,3 @@
+A chatbot is a software application designed to simulate conversation with human users. Chatbots are commonly used in customer service, personal assistants, and online support. They can be rule-based, following predefined scripts, or AI-driven, using natural language processing to understand and respond to queries.
+
+Modern chatbots use machine learning and NLP to provide dynamic and context-aware responses. They can retrieve information from databases, integrate with APIs, and perform tasks like booking appointments or answering FAQs. Some chatbots are integrated with voice interfaces, enabling voice-based interactions.

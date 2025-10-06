@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SRP's Chatbot</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom scrollbar for chat */
+    #chat {
+      scrollbar-width: thin;
+      scrollbar-color: #a1a1aa #f4f4f5;
+    }
+    #chat::-webkit-scrollbar {
+      width: 8px;
+    }
+    #chat::-webkit-scrollbar-track {
+      background: #f4f4f5;
+    }
+    #chat::-webkit-scrollbar-thumb {
+      background-color: #a1a1aa;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-purple-600 via-pink-500 to-indigo-600 min-h-screen flex flex-col items-center justify-start p-6">
+
+  <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 text-center text-3xl font-bold tracking-wide shadow-lg">
+      SRP's Chatbot
+    </div>
+
+    <!-- Chat container -->
+    <div id="chat" class="flex-1 p-6 overflow-y-auto space-y-4 bg-gray-50">
+      <!-- Messages will appear here -->
+    </div>
+
+    <!-- Input -->
+    <div class="p-4 bg-white flex gap-3 items-center border-t border-gray-200">
+      <input id="queryInput" type="text" placeholder="Type your question..." 
+             class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400" />
+      <button onclick="ask()" 
+              class="bg-purple-500 text-white px-6 py-2 rounded-full hover:bg-purple-600 transition">Ask</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="text-white mt-6 text-center">
+    Built with ❤️ by SRP
+  </div>
+
+  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("queryInput");
+
+    // Function to append messages
+    function appendMessage(sender, text) {
+      const msg = document.createElement("div");
+      msg.className = sender === "user" ? "text-right" : "text-left";
+      msg.innerHTML = `
+        <div class="${sender === 'user' ? 'inline-block bg-purple-500 text-white' : 'inline-block bg-gray-200 text-gray-800'} 
+                    px-4 py-2 rounded-2xl max-w-[80%] break-words shadow-md animate-fadeIn">
+          ${text}
+        </div>
+      `;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // Function to call backend
+    async function ask() {
+      const question = input.value.trim();
+      if (!question) return;
+      appendMessage("user", question);
+      input.value = "";
+      appendMessage("bot", "Thinking... 🤔");
+
+      try {
+        const response = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question })
+        });
+        const data = await response.json();
+        chat.lastChild.remove(); // remove "Thinking..."
+        appendMessage("bot", data.answer || data.error);
+      } catch (err) {
+        chat.lastChild.remove();
+        appendMessage("bot", "Error connecting to the server!");
+        console.error(err);
+      }
+
+      input.focus();
+    }
+
+    // Enter key triggers ask()
+    input.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        ask();
+      }
+    });
+  </script>
+
+  <!-- Optional: Add animations -->
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.3s ease-out;
+    }
+  </style>
+
+</body>
+</html>

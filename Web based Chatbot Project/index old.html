@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple RAG App</title>
+</head>
+<body>
+  <h2>Ask a Question</h2>
+  <input id="q" type="text" placeholder="Your question..." size="50" />
+  <button onclick="ask()">Ask</button>
+  <pre id="ans"></pre>
+
+  <script>
+    async function ask() {
+      const question = document.getElementById('q').value;
+      const res = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+      });
+      const data = await res.json();
+      document.getElementById('ans').innerText = data.answer || data.error;
+    }
+  </script>
+</body>
+</html>
